@@ -17,7 +17,7 @@ const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 // Common greetings
 const greetings = ["hi", "hello", "hey", "good morning", "good afternoon", "good evening"];
 
-app.post("/chat", async (req, res) => {
+app.post("/chat", cors(),async (req, res) => {
   try {
     const userMessage = req.body.message.toLowerCase();
 
