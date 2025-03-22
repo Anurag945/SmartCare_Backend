@@ -11,9 +11,9 @@ app.use(express.json());
 // ✅ Configure CORS properly
 app.use(
   cors({
-    origin: ["http://localhost:5173", "https://your-frontend-domain.vercel.app"], // Add your frontend URLs here
-    methods: ["GET", "POST"],
-    allowedHeaders: ["Content-Type"],
+    origin: ["http://localhost:5173", "https://smart-care-frontend.vercel.app/"], // Add your frontend URLs here
+    methods: ["GET", "POST","PUT","DELETE","OPTIONS"], //
+
   })
 );
 
@@ -58,3 +58,5 @@ app.post("/chat", async (req, res) => {
 });
 
 app.listen(5000, () => console.log("Server running on port 5000"));
+
+
