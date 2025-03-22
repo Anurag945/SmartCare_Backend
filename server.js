@@ -6,18 +6,45 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 dotenv.config();
 const app = express();
 
-// ✅ Proper CORS setup
-app.use(cors())
+const allowedOrigins = ["https://smart-care-frontend.vercel.app"];
+
+app.use(
+  cors({
+    origin: allowedOrigins,
+    methods: ["GET", "POST", "OPTIONS"],
+    allowedHeaders: [
+      "X-CSRF-Token", 
+      "X-Requested-With", 
+      "Accept", 
+      "Accept-Version", 
+      "Content-Length", 
+      "Content-MD5", 
+      "Content-Type", 
+      "Date", 
+      "X-Api-Version"
+    ],
+    credentials: true,
+  })
+);
+
 app.use(express.json());
+
+// ✅ Explicitly handle CORS Preflight Requests (OPTIONS)
+app.options("*", (req, res) => {
+  res.set("Access-Control-Allow-Origin", allowedOrigins[0]);
+  res.set("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+  res.set("Access-Control-Allow-Headers", "X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version");
+  res.set("Access-Control-Allow-Credentials", "true");
+  return res.sendStatus(200); // ✅ Ensure OPTIONS request gets a 200 response
+});
 
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
 const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 
-// Common greetings
 const greetings = ["hi", "hello", "hey", "good morning", "good afternoon", "good evening"];
 
-app.post("/chat", cors(),async (req, res) => {
+app.post("/chat", async (req, res) => {
   try {
     const userMessage = req.body.message.toLowerCase();
 
@@ -48,6 +75,5 @@ app.post("/chat", cors(),async (req, res) => {
   }
 });
 
-// Start server
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
