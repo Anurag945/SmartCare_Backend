@@ -8,14 +8,8 @@ dotenv.config();
 const app = express();
 app.use(express.json());
 
-// ✅ Configure CORS properly
-app.use(
-  cors({
-    origin: ["http://localhost:5173", "https://smart-care-frontend.vercel.app/"], // Add your frontend URLs here
-    methods: ["GET", "POST","PUT","DELETE","OPTIONS"], //
-
-  })
-);
+// ✅ Allow all origins (TEMPORARY SOLUTION)
+app.use(cors({ origin: "*", methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"] }));
 
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
@@ -57,6 +51,7 @@ app.post("/chat", async (req, res) => {
   }
 });
 
+// ✅ Handle Preflight Requests (Important for CORS)
+app.options("*", cors());
+
 app.listen(5000, () => console.log("Server running on port 5000"));
-
-
