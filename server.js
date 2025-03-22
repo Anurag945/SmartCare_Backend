@@ -1,15 +1,24 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
-import axios from "axios";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
 dotenv.config();
 const app = express();
 app.use(express.json());
 
-// ✅ Allow all origins (TEMPORARY SOLUTION)
-app.use(cors({ origin: "*", methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"] }));
+// ✅ Proper CORS setup
+app.use(
+  cors({
+    origin: ["https://smart-care-frontend.vercel.app"], // Allow only frontend
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true,
+  })
+);
+
+// ✅ Handle Preflight Requests
+app.options("*", cors());
 
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
@@ -22,12 +31,10 @@ app.post("/chat", async (req, res) => {
   try {
     const userMessage = req.body.message.toLowerCase();
 
-    // Handle greetings
     if (greetings.includes(userMessage)) {
       return res.json({ reply: "Hello! I am SmartCare Bot. How can I assist you today?" });
     }
 
-    // Construct AI prompt
     const prompt = `
       You are SmartCare Bot, a friendly and helpful assistant.
       - You specialize in healthcare but can chat about general topics as well.
@@ -51,7 +58,6 @@ app.post("/chat", async (req, res) => {
   }
 });
 
-// ✅ Handle Preflight Requests (Important for CORS)
-app.options("*", cors());
-
-app.listen(5000, () => console.log("Server running on port 5000"));
+// Start server
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
