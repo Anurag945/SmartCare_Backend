@@ -8,17 +8,7 @@ const app = express();
 app.use(express.json());
 
 // ✅ Proper CORS setup
-app.use(
-  cors({
-    origin: ["https://smart-care-frontend.vercel.app"], // Allow only frontend
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-    credentials: true,
-  })
-);
-
-// ✅ Handle Preflight Requests
-app.options("*", cors());
+app.use(cors())
 
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
